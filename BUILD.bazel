@@ -1,9 +1,19 @@
-load("@rules_foreign_cc//tools/build_defs:cmake.bzl", "cmake_external")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
 
-cmake_external(
-    name = "libgit2",
-    lib_source = "@libgit2//:all",
-    out_include_dir = "include/git2",
-    out_lib_dir = "lib64",
-    shared_libraries = ["libgit2.so"],
+# gazelle:prefix github.com/whs-dot-hk/bazel_libgit2_test
+gazelle(name = "gazelle")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/whs-dot-hk/bazel_libgit2_test",
+    visibility = ["//visibility:private"],
+    deps = ["@com_github_libgit2_git2go_v30//:go_default_library"],
+)
+
+go_binary(
+    name = "bazel_libgit2_test",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
 )
